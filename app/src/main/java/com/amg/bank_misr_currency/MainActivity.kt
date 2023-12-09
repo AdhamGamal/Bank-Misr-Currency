@@ -26,21 +26,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.amg.bank_misr_currency.ui.MainVM
+import com.amg.bank_misr_currency.ui.UiState
 import com.amg.bank_misr_currency.ui.layouts.DropDownField
 import com.amg.bank_misr_currency.ui.layouts.EditNumberField
+import com.amg.bank_misr_currency.ui.layouts.LayoutLoading
 import com.amg.bank_misr_currency.ui.theme.BankMisrCurrencyTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val mainVM: MainVM by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainVM.uiState.toString()
         setContent {
             BankMisrCurrencyTheme {
-
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainLayout()
+                    MainLayout(Modifier.fillMaxSize())
                 }
             }
         }
@@ -49,10 +57,29 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainLayout() {
+fun MainLayout(modifier: Modifier = Modifier, mainVM: MainVM = viewModel()) {
 
+    when (val uiState = mainVM.uiState) {
+        is UiState.Loaded -> {
+            MainContent(uiState.symbols, modifier)
+        }
+
+        is UiState.Loading -> {
+            LayoutLoading(modifier)
+        }
+
+        is UiState.Error -> {
+            Text(modifier = modifier, text = stringResource(id = R.string.error_Loading_label))
+        }
+    }
+
+}
+
+
+@Composable
+fun MainContent(symbols: List<String>, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
@@ -69,7 +96,7 @@ fun MainLayout() {
 
         FromToDropdowns(
             modifier = Modifier.padding(bottom = 32.dp),
-            values = listOf("EGP", "USD")
+            values = symbols
         )
 
         ValuesTextFields(
