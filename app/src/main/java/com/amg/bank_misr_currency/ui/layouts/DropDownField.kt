@@ -1,6 +1,5 @@
 package com.amg.bank_misr_currency.ui.layouts
 
-import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,19 +18,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.amg.bank_misr_currency.ui.listeners.CurrencySelectListener
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowScope.DropDownField(
     @StringRes label: Int,
+    listener: CurrencySelectListener,
     currencies: List<String>,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(currencies.firstOrNull() ?: "") }
 
@@ -69,7 +68,7 @@ fun RowScope.DropDownField(
                             onClick = {
                                 selectedText = item
                                 expanded = false
-                                Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
+                                listener.onCurrencySelectListener(label, item)
                             }
                         )
                     }

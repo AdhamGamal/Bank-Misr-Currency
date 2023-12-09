@@ -15,15 +15,6 @@ data class CurrencyDetail(
 )
 
 @Serializable
-data class ErrorResponse(
-    val code: Long = 0,
-    val type: String = "",
-    val info: String = "",
-)
-
-@Serializable
 data class ConversionRateResponse(
-    val success: Boolean = false,
-    val symbols: Map<String, String> = mapOf(),
-    val error: ErrorResponse = ErrorResponse()
+    val data: Map<String, Double> = mapOf(),
 )

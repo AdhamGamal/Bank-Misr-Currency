@@ -32,6 +32,7 @@ import com.amg.bank_misr_currency.ui.UiState
 import com.amg.bank_misr_currency.ui.layouts.DropDownField
 import com.amg.bank_misr_currency.ui.layouts.EditNumberField
 import com.amg.bank_misr_currency.ui.layouts.LayoutLoading
+import com.amg.bank_misr_currency.ui.listeners.CurrencySelectListener
 import com.amg.bank_misr_currency.ui.theme.BankMisrCurrencyTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -41,14 +42,24 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainVM.uiState.toString()
         setContent {
             BankMisrCurrencyTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainLayout(Modifier.fillMaxSize())
+                    MainLayout(object : CurrencySelectListener {
+                        override fun onCurrencySelectListener(type: Int, currency: String) {
+                            when(type) {
+                                R.string.to_label -> {
+                                    mainVM.toCurrency.value = currency
+                                }
+                                R.string.from_label -> {
+                                    mainVM.fromCurrency.value = currency
+                                }
+                            }
+                        }
+                    }, Modifier.fillMaxSize())
                 }
             }
         }
@@ -57,11 +68,15 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainLayout(modifier: Modifier = Modifier, mainVM: MainVM = viewModel()) {
+fun MainLayout(
+    listener: CurrencySelectListener,
+    modifier: Modifier = Modifier,
+    mainVM: MainVM = viewModel()
+) {
 
     when (val uiState = mainVM.uiState) {
         is UiState.Loaded -> {
-            MainContent(uiState.symbols, modifier)
+            MainContent(listener, uiState.symbols, modifier)
         }
 
         is UiState.Loading -> {
@@ -77,7 +92,11 @@ fun MainLayout(modifier: Modifier = Modifier, mainVM: MainVM = viewModel()) {
 
 
 @Composable
-fun MainContent(symbols: List<String>, modifier: Modifier = Modifier) {
+fun MainContent(
+    listener: CurrencySelectListener,
+    symbols: List<String>,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .statusBarsPadding()
@@ -96,6 +115,7 @@ fun MainContent(symbols: List<String>, modifier: Modifier = Modifier) {
 
         FromToDropdowns(
             modifier = Modifier.padding(bottom = 32.dp),
+            listener = listener,
             values = symbols
         )
 
@@ -109,14 +129,15 @@ fun MainContent(symbols: List<String>, modifier: Modifier = Modifier) {
 @Composable
 fun FromToDropdowns(
     modifier: Modifier = Modifier,
+    listener: CurrencySelectListener,
     values: List<String>,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        DropDownField(label = R.string.from_label, values)
-        DropDownField(label = R.string.to_label, values)
+        DropDownField(label = R.string.from_label, listener, values)
+        DropDownField(label = R.string.to_label, listener, values)
     }
 }
 
@@ -160,6 +181,9 @@ fun ValuesTextFields(
 @Composable
 fun TipTimeLayoutPreview() {
     BankMisrCurrencyTheme {
-        MainLayout()
+        MainLayout(object : CurrencySelectListener {
+            override fun onCurrencySelectListener(type: Int, currency: String) {
+            }
+        })
     }
 }
