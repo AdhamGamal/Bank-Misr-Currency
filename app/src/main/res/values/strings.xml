@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Bank-Misr-Currency</string>
+    <string name="calculate">Calculate</string>
+    <string name="from_label">From</string>
+    <string name="to_label">To</string>
+    <string name="value">Currency</string>
+
 </resources>
