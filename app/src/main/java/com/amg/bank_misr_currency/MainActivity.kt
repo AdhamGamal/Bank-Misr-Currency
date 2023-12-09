@@ -17,12 +17,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.amg.bank_misr_currency.ui.layouts.DropDownField
+import com.amg.bank_misr_currency.ui.layouts.EditNumberField
 import com.amg.bank_misr_currency.ui.theme.BankMisrCurrencyTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,6 +71,10 @@ fun MainLayout() {
             modifier = Modifier.padding(bottom = 32.dp),
             values = listOf("EGP", "USD")
         )
+
+        ValuesTextFields(
+            modifier = Modifier.padding(bottom = 32.dp),
+        )
     }
 }
 
@@ -84,6 +93,40 @@ fun FromToDropdowns(
     }
 }
 
+@Composable
+fun ValuesTextFields(
+    modifier: Modifier = Modifier,
+) {
+    var amountInput by remember { mutableStateOf("1") }
+    var tipInput by remember { mutableStateOf("1") }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        EditNumberField(
+            label = R.string.value,
+            leadingIcon = R.drawable.money,
+            value = amountInput,
+            onValueChanged = { amountInput = it },
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .fillMaxWidth(),
+        )
+        EditNumberField(
+            label = R.string.value,
+            leadingIcon = R.drawable.money,
+            value = tipInput,
+            onValueChanged = { tipInput = it },
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .fillMaxWidth(),
+        )
+
+    }
+}
 
 
 @Preview(showBackground = true)
